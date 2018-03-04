@@ -55,6 +55,7 @@ class Upload {
             'application/octet-stream',
             'application/pdf',
             'application/vnd.oasis.opendocument.text',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'application/rtf',
             'application/msword'
         ];
@@ -157,7 +158,7 @@ class Upload {
 
         if (!$this->Image):
             $this->Result = false;
-            $this->Error = 'Tipo de arquivo inválido, envie imagens JPG ou PNG.!';
+            $this->Error = 'Tipo de arquivo inválido, envie imagens JPG, PNG ou GIF.!';
         else:
             $x = imagesx($this->Image);
             $y = imagesx($this->Image);
@@ -179,11 +180,14 @@ class Upload {
                 case 'image/x-png';
                     imagepng($NewImage, self::$BaseDir . $this->Send . $this->Name);
                     break;
+                case 'image/gif';
+                    imagegif($NewImage, self::$BaseDir . $this->Send . $this->Name);
+                    break;
             endswitch;
 
             if (!$NewImage):
                 $this->Result = false;
-                $this->Error = 'Tipo de arquivo inválido, envie imagens JPG ou PNG.!';
+                $this->Error = 'Tipo de arquivo inválido, envie imagens JPG, PNG ou GIF.!';
             else:
                 $this->Result = $this->Send . $this->Name;
                 $this->Error = null;
@@ -196,7 +200,7 @@ class Upload {
     }
 
     /** Envia arquivos e midias * */
-    public function MoveFile() {
+    private function MoveFile() {
         if (move_uploaded_file($this->File['tmp_name'], self::$BaseDir . $this->Send . $this->Name)):
             $this->Result = $this->Send . $this->Name;
             $this->Error = null;

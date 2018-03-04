@@ -2,7 +2,7 @@
 
 /**
  * Session.class { HELPER }
- * Responsável pelas estatísticas de trafégo do sistema!
+ * Responsável pelas estatísticas, sessões e atualizações de trafégo do sistema!
  * 
  * @copyright (c) 2017, Ederson C. Menezes TADS2017
  */
@@ -18,8 +18,8 @@ class Session {
         $this->CheckSession($Cache);
     }
 
-    //Verifica e executa todos os métodos da classe.!
-    private function Checksession($Cache = null) {
+    /** Verifica e executa todos os métodos da classe.! **/
+    private function CheckSession($Cache = null) {
         $this->Date = date('Y-m-d');
         $this->Cache = ((int) $Cache ? $Cache : 20);
 
@@ -38,8 +38,14 @@ class Session {
 
         $this->Date = null;
     }
+    
+    /*
+     * ****************************************
+     * ********* SESSÃO DO USUÁRIO ************
+     * ****************************************
+     */
 
-    //inicia a sessão do usuário
+    /** Inicia a sessão do usuário  **/
     private function setSession() {
         $_SESSION['useronline'] = [
             "online_session" => session_id(),
@@ -51,13 +57,19 @@ class Session {
         ];
     }
 
-    //Atualiza sessão do usuário!
+    /** Atualiza sessão do usuário! **/
     private function sessionUpdate() {
         $_SESSION['useronline']['online_endview'] = date('Y-m-d H:i:s', strtotime("+{$this->Cache}minutes"));
         $_SESSION['useronline']['online_url'] = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_DEFAULT);
     }
+    
+    /*
+     * ****************************************
+     * *** USUÁRIOS, VISITAS, ATUALIZAÇÕES ****
+     * ****************************************
+     */
 
-    //Verifica e insere o tráfego na tabela
+    /** Verifica e insere o tráfego na tabela **/
     private function setTraffic() {
         $this->getTraffic();
         if (!$this->Traffic):
@@ -77,7 +89,7 @@ class Session {
         endif;
     }
 
-    //Verifica e atualiza os page views!
+    /** Verifica e atualiza os page_views! **/
     private function TrafficUpdate() {
         $this->getTraffic();
         $ArrSiteViews = ['siteviews_pages' => $this->Traffic['siteviews_pages'] + 1];
@@ -87,7 +99,7 @@ class Session {
         $this->Traffic = null;
     }
 
-    //Obtém dados da tabela [HELPER TRAFFIC]
+    /** Obtém dados da tabela [HELPER TRAFFIC] **/
     private function getTraffic() {
         $readSiteViews = new Read;
         $readSiteViews->ExeRead('ws_siteviews', "WHERE siteviews_date = :date", "date={$this->Date}");
@@ -96,7 +108,7 @@ class Session {
         endif;
     }
 
-    //Verifica, cria e atualiza o cookie do usuário [HELPER TRAFFIC]
+    /** Verifica, cria e atualiza o cookie do usuário [HELPER TRAFFIC] **/
     public function getCookie() {
         $Coockie = filter_input(INPUT_COOKIE, 'useronline', FILTER_DEFAULT);
         setcookie("useronline", base64_encode("TADS IFMT"), time() + 86400);
@@ -107,7 +119,13 @@ class Session {
         endif;
     }
 
-    //Identifica o browser do usuário
+    /*
+     * ****************************************
+     * ******* NAVEGADORES DE ACESSO **********
+     * ****************************************
+     */
+    
+    /** Identifica o navegador do usuário **/
     private function CheckBrowser() {
         $this->Browser = $_SESSION['useronline']['online_agent'];
         if (strpos($this->Browser, 'Chrome')):
@@ -122,7 +140,7 @@ class Session {
         endif;
     }
 
-    //Atualiza tabela ccom dados de navegadores!
+    /** Atualiza tabela com dados de navegadores! **/
     private function BrowserUpdate() {
         $readAgent = new Read;
         $readAgent->ExeRead('ws_siteviews_agent', "WHERE agent_name :agent", "agent={$this->Browser}");
@@ -136,8 +154,14 @@ class Session {
             $updateAgent->ExeUpdate('ws_siteviews_agent', $ArrAgent, "WHERE agent_name = :name", "name={$this->Browser}");
         endif;
     }
+    
+    /*
+     * ****************************************
+     * ********* USUÁRIOS ONLINE  *************
+     * ****************************************
+     */
 
-    //Cadastra usuário online na tabela!
+    /** Cadastra usuário online na tabela! **/
     private function setUsuario() {
         $sesOnline = $_SESSION['useronline'];
         $sesOnline['agent_name'] = $this->Browser;
@@ -146,7 +170,7 @@ class Session {
         $userCreate->ExeCreate('ws_siteviews_online', $sesOnline);
     }
 
-    //Atualzia navegação do usuário online!
+    /** Atualiza navegação do usuário online! **/
     private function UsuarioUpdate() {
         $ArrOnline = [
             'online_endview' => $_SESSION['useronline']['online_endview'],

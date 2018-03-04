@@ -29,7 +29,7 @@ class View {
         require_once ("{$File}.inc.php");
     }
 
-    //PRIVATE
+    /** PRIVATE FUNCTIONS **/
 
     private static function setKeys($Data) {
         self::$Data = $Data;
