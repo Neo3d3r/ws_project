@@ -11,7 +11,9 @@ class Check {
     private static $Data;
     private static $Format;
 
-    public static function Email($Email) {
+    /* Função utilizada para validação de E-mails */
+
+    public static function CheckEmail($Email) {
 
         self::$Data = (string) $Email;
         self::$Format = '/[a-z0-9_\.\-]+@[a-z0-9_\.\-]*[a-z0-9_\.\-]+\.[a-z]{2,4}$/';
@@ -22,7 +24,9 @@ class Check {
         endif;
     }
 
-    public static function Name($Name) {
+    /* Função utilizada para criação de URL amigável */
+
+    public static function CheckUrl($Name) {
         self::$Format = array();
         self::$Format['a'] = 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜüÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿRr"!@#$%&*()_-+={[}]/?;:.,\\\'<>°ºª';
         self::$Format['b'] = 'aaaaaaaceeeeiiiidnoooooouuuuuybsaaaaaaaceeeeiiiidnoooooouuuyybyRr                                 ';
@@ -32,11 +36,14 @@ class Check {
         self::$Data = str_replace(' ', '-', self::$Data);
         self::$Data = str_replace(array('-----', '----', '---', '--'), '-', self::$Data);
 
-
         return strtolower(utf8_encode(self::$Data));
     }
 
-    public static function Hora($Data) {
+    /* Função que transforma as datas para Timestamp 
+     * Transforma a data e cria tempo caso não informada
+     */
+
+    public static function CheckData($Data) {
         self::$Format = explode(' ', $Data);
         self::$Data = explode('/', self::$Format[0]);
 
@@ -48,7 +55,9 @@ class Check {
         return self::$Data;
     }
 
-    public static function Words($String, $Limite, $Pointer = null) {
+    /* Função que limita a quantidade de palavras a ser exibida */
+
+    public static function LimitWords($String, $Limite, $Pointer = null) {
         self::$Data = strip_tags(trim($String));
         self::$Format = (int) $Limite;
 
@@ -61,6 +70,8 @@ class Check {
         return $Result;
     }
 
+    /* Função que busca no banco pelo nome da categoria para exibição e novas inserções */
+
     public static function CatByName($CategoryName) {
         $read = new Read;
         $read->ExeRead('ws_categories', "WHERE category_name = :name", "name={$CategoryName}");
@@ -72,6 +83,8 @@ class Check {
         endif;
     }
 
+    /* Função que verifica a quantidade de usuários online e deleta usuários vencidos */
+
     public static function UserOnline() {
         $now = date('Y-m-d H:i:s');
         $deleteUserOnline = new Delete;
@@ -82,13 +95,19 @@ class Check {
         return $readUserOnline->getRowCount();
     }
 
+    /*
+     * Esta função checa a existência de uma imagem na pasta e redimensiona ou não esta imagem
+     * usando o arquivo tim.php na raiz do projeto. 
+     * É preciso configurar a raiz do site e criar a pasta de repositório das imagens a serem utilizadas.
+     */
+
     public static function Image($ImageUrl, $ImageDesc, $ImageW = null, $ImageH = null) {
         self::$Data = 'uploads/' . $ImageUrl;
 
         if (file_exists(self::$Data) && !is_dir(self::$Data)):
             $patch = HOME;
             $imagem = self::$Data;
-//            return $patch . $imagem;
+
             return"<img src=\"{$patch}/tim.php?src={$patch}/{$imagem}&w={$ImageW}&h={$ImageH}\" alt=\"{$ImageDesc}\" title=\"{$ImageDesc}\"/>";
         else:
             return false;

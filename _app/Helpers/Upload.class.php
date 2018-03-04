@@ -24,6 +24,7 @@ class Upload {
     private $Folder;
     private static $BaseDir;
 
+    /** Função que verifica o diretório para os uploads e cria o mesmo caso não exista */
     function __construct($BaseDir = null) {
         self::$BaseDir = ( (string) $BaseDir ? $BaseDir : '../uploads/');
         if (!file_exists(self::$BaseDir) && !is_dir(self::$BaseDir)):
@@ -31,7 +32,8 @@ class Upload {
         endif;
     }
 
-    public function Image(array $Image, $Name = null, $Width = null, $Folder = null) {
+    /** Função que faz Upload de Imagens **/
+    public function UpImage(array $Image, $Name = null, $Width = null, $Folder = null) {
         $this->File = $Image;
         $this->Name = ((string) $Name ? $Name : substr($Image['name'], 0, strrpos($Image['name'], '.')));
         $this->Width = ((int) $Width ? $Width : 1024);
@@ -41,8 +43,8 @@ class Upload {
         $this->setFileName();
         $this->UploadImage();
     }
-    
-    // site com todos os MIME TYPES https://www.iana.org/assignments/media-types/media-types.xhtml
+
+    /** site com todos os MIME TYPES https://www.iana.org/assignments/media-types/media-types.xhtml **/
 
     public function File(array $File, $Name = null, $Folder = null, $MaxFileSize = null) {
         $this->File = $File;
@@ -69,7 +71,7 @@ class Upload {
             $this->MoveFile();
         endif;
     }
-    
+
     public function Media(array $Media, $Name = null, $Folder = null, $MaxFileSize = null) {
         $this->File = $Media;
         $this->Name = ((string) $Name ? $Name : substr($Media['name'], 0, strrpos($Media['name'], '.')));
@@ -109,7 +111,8 @@ class Upload {
         return $this->Error;
     }
 
-    //PRIVATES
+    /** PRIVATES **/
+    /** Função que verifica se existe um folder criado, verifica com mês e ano de criação **/
     private function CheckFolder($Folder) {
         list($y, $m) = explode('/', date('Y/m'));
         $this->CreateFolder("{$Folder}");
@@ -118,12 +121,14 @@ class Upload {
         $this->Send = "{$Folder}/{$y}/{$m}/";
     }
 
+    /** Função que cria o folder caso não exista ainda no sistema **/
     private function CreateFolder($Folder) {
         if (!file_exists(self::$BaseDir . $Folder) && !is_dir(self::$BaseDir . $Folder)):
             mkdir(self::$BaseDir . $Folder, 0777);
         endif;
     }
 
+    /** Função que verifica o nome dos arquivos para não criar com o mesmo nome **/
     private function setFileName() {
         $FileName = Check::Name($this->Name) . strrchr($this->File['name'], '.');
         if (file_exists(self::$BaseDir . $this->Send . $FileName)):
@@ -132,7 +137,7 @@ class Upload {
         $this->Name = $FileName;
     }
 
-    //Realiza o upload de imagens redimensionamento da mesma
+    /** Realiza o upload de imagens redimensionamento da mesma **/
     private function UploadImage() {
 
         switch ($this->File['type']):
@@ -187,7 +192,7 @@ class Upload {
         endif;
     }
 
-    //Envia arquivos e midias
+    /** Envia arquivos e midias **/
     public function MoveFile() {
         if (move_uploaded_file($this->File['tmp_name'], self::$BaseDir . $this->Send . $this->Name)):
             $this->Result = $this->Send . $this->Name;

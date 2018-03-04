@@ -1,7 +1,7 @@
 <?php
 if (!class_exists('Login')) :
-    header('Location: ../../painel.php');
-    die;
+header('Location: ../../painel.php');
+die;
 endif;
 ?>
 
@@ -16,16 +16,16 @@ endif;
         <?php
         $data = filter_input_array(INPUT_POST, FILTER_DEFAULT);
         if (!empty($data['SendPostForm'])):
-            unset($data['SendPostForm']);
-            require '_models/AdminCategory.class.php';
-            $cadastra = new AdminCategory;
-            $cadastra->ExeCreate($data);
+        unset($data['SendPostForm']);
+        require '_models/AdminCategory.class.php';
+        $cadastra = new AdminCategory;
+        $cadastra->ExeCreate($data);
 
-            if (!$cadastra->getResult()):
-                NEOErro($cadastra->getError()[0], $cadastra->getError()[1]);
-            else:
-                header('Location: painel.php?exe=categories/update&create=true&catid=' . $cadastra->getResult());
-            endif;
+        if (!$cadastra->getResult()):
+        NEOErro($cadastra->getError()[0], $cadastra->getError()[1]);
+        else:
+        header('Location: painel.php?exe=categories/update&create=true&catid=' . $cadastra->getResult());
+        endif;
 
         endif;
         ?>
@@ -59,17 +59,17 @@ endif;
                         $readSes = new Read;
                         $readSes->ExeRead("ws_categories", "WHERE category_parent IS NULL ORDER BY category_title ASC");
                         if (!$readSes->getResult()):
-                            echo '<option disabled="disable" value="null"> Cadastre antes uma seção! </option>';
+                        echo '<option disabled="disable" value="null"> Cadastre antes uma seção! </option>';
                         else:
-                            foreach ($readSes->getResult() as $ses):
-                                echo "<option value=\"{$ses['category_id']}\" ";
+                        foreach ($readSes->getResult() as $ses):
+                        echo "<option value=\"{$ses['category_id']}\" ";
 
-                                if ($ses['category_id'] == $data['category_parent']):
-                                    echo ' selected="selected" ';
-                                endif;
+                        if ($ses['category_id'] == $data['category_parent']):
+                        echo ' selected="selected" ';
+                        endif;
 
-                                echo "> {$ses['category_title']} </option>";
-                            endforeach;
+                        echo "> {$ses['category_title']} </option>";
+                        endforeach;
                         endif;
                         ?>
                     </select>
