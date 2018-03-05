@@ -2,7 +2,7 @@
 
 /**
  * View.class { HELPER MVC }
- * Resposnável por carregar TPL exibir View em MVC
+ * Responsável por carregar TPL exibir View em MVC
  * 
  * @copyright (c) 2017, Ederson C. Menezes TADS2017
  */
@@ -31,6 +31,7 @@ class View {
 
     /** PRIVATE FUNCTIONS **/
 
+    /** Cria os links dinamicos para o HTML **/
     private static function setKeys($Data) {
         self::$Data = $Data;
         self::$Keys = explode('&', '#' . implode("#&#", array_keys(self::$Data)) . '#');
@@ -40,6 +41,7 @@ class View {
         self::$Values = array_values(self::$Data);
     }
 
+    /** Exibe a show **/
     private static function ShowView() {
         echo str_replace(self::$Keys, self::$Values, self::$Template);
     }

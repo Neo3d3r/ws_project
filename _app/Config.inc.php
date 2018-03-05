@@ -1,13 +1,17 @@
 <?php
 define('HOME', 'http://localhost/cursos/ws_php/modulos/08-classes-auxiliares');
 
-// CONFIGURAÇÕES DO SITE ####################
+/* CONFIGURAÇÕES DO SITE ####################
+ * Abaixo configuração do Banco de Dados
+ */
 define('HOST', 'localhost');
 define('USER', 'root');
 define('PASS', '');
 define('DBSA', 'wsphp');
 
-// AUTO LOAD DE CLASSES #####################
+/* AUTO LOAD DE CLASSES #####################
+ * 
+ */
 function __autoload($Class) {
 
     $cDir = ['Conn', 'Helpers', 'Models'];
@@ -26,17 +30,22 @@ function __autoload($Class) {
     endif;
 }
 
-// TRATAMENTO DE ERROS ######################
-//CSS constantes :: Mensagens de Erro
-define('NEO_ACCEPT', 'accept');
-define('NEO_INFOR', 'infor');
-define('NEO_ALERT', 'alert');
-define('NEO_ERROR', 'error');
+/* TRATAMENTO DE ERROS ######################
+ * CSS constantes :: Mensagens de Erro
+ * Necessário implementação de BOOTSTRAP 4 no projeto para funcionar
+*/
+define('NEO_ACCEPT', 'alert-success');
+define('NEO_INFOR', 'alert-warning');
+define('NEO_ALERT', 'alert-primary');
+define('NEO_ERROR', 'alert-danger');
 
-//NEOErro :: Exibe erros lançados :: Front
+/** NEOErro :: Exibe erros lançados :: Front **/
 function NEOErro($ErrMsg, $ErrNo, $ErrDie = NULL) {
     $CssClass = ($ErrNo == E_USER_NOTICE ? NEO_INFOR : ($ErrNo == E_USER_WARNING ? NEO_ALERT : ($ErrNo == E_USER_ERROR ? NEO_ERROR : $ErrNo)));
-    echo "<p class=\"trigger {$CssClass}\">{$ErrMsg}<span class=\"ajax_close\"></span></p>";
+
+    echo "<div class=\"alert {$CssClass}\" role=\"alert\">
+            <p>{$ErrMsg}</p>
+          </div>";
 
     if ($ErrDie):
         die;
@@ -45,13 +54,12 @@ function NEOErro($ErrMsg, $ErrNo, $ErrDie = NULL) {
 
 set_error_handler('NEOErro');
 
-//PHPErro :: personaliza o gatilho do PHP
-function PHPErro($ErrNo, $ErnnMsg, $ErrFile, $ErrLine) {
+/** PHPErro :: personaliza o gatilho do PHP **/
+function PHPErro($ErnnMsg, $ErrNo, $ErrFile, $ErrLine) {
     $CssClass = ($ErrNo == E_USER_NOTICE ? NEO_INFOR : ($ErrNo == E_USER_WARNING ? NEO_ALERT : ($ErrNo == E_USER_ERROR ? NEO_ERROR : $ErrNo)));
-    echo "<p class=\"trigger {$CssClass}\>";
+    echo "<p class=\"alert {$CssClass}\" role=\"alert\">";
     echo "<b>Erro na Linha: {$ErrLine} :: </b> {$ErnnMsg}<br>";
     echo "<small>{$ErrFile}</small>";
-    echo "<span class=\"ajax_close\"></span></p>";
 
     if ($ErrNo == E_USER_ERROR):
         die;
